@@ -1,6 +1,6 @@
 <!-- styles.css -->
 /* Reset y base */
-*{margin:0;padding:0;outline:none !important;}
+*{margin:0;padding:0;outline:none !important;transition:all 1s;}
 html, body {
   width: 100%;
   height: 100%;
@@ -40,3 +40,7 @@ body.plain-view li{display:list-item!important;margin:0.5em 0;padding:initial!im
 body.plain-view #mindmap-lines{display:none!important;}
 #inputArchivo,#selectorColor{display:none;}
 a img{width:30px;}
+#btnMoveUp, #btnMoveDown {
+  font-size: 1.2rem;
+  padding: 4px;
+}

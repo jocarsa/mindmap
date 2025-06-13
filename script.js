@@ -10,6 +10,9 @@ function iniciarMapaMental() {
   let offsetY = 0;
   mapa.style.transformOrigin = '0 0';
 
+  // Referencia para Drag & Drop
+  let dragged = null;
+
   // Función para aplicar transform y redibujar
   function actualizarTransform() {
     mapa.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
@@ -44,7 +47,7 @@ function iniciarMapaMental() {
   mapa.style.position = 'relative';
   mapa.insertBefore(svg, mapa.firstChild);
 
-  // envolver textos en <span>
+  // Envolver textos en <span>
   function envolverTextos() {
     mapa.querySelectorAll('li').forEach(li => {
       if (li.querySelector(':scope > span.node-text')) return;
@@ -61,7 +64,7 @@ function iniciarMapaMental() {
     });
   }
 
-  // dibujar líneas con esquinas redondeadas
+  // Dibujar líneas con esquinas redondeadas
   function dibujarLineas() {
     if (document.body.classList.contains('plain-view')) return;
     const rect = mapa.getBoundingClientRect();
@@ -97,13 +100,22 @@ function iniciarMapaMental() {
 
   // Observador y resize
   const mo = new MutationObserver(() => {
-    mo.disconnect(); envolverTextos(); dibujarLineas(); mo.observe(mapa, { childList: true, subtree: true, characterData: true });
+    mo.disconnect();
+    envolverTextos();
+    makeAllDraggable();
+    dibujarLineas();
+    mo.observe(mapa, { childList: true, subtree: true, characterData: true });
   });
   mo.observe(mapa, { childList: true, subtree: true, characterData: true });
   window.addEventListener('resize', dibujarLineas);
 
   // Tab para agregar hijo
-  document.addEventListener('keydown', e => { if (e.key === 'Tab') { e.preventDefault(); agregarHijoSeleccion(); }});
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      agregarHijoSeleccion();
+    }
+  });
 
   // Agregar hijo
   document.getElementById('btnAgregarHijo').addEventListener('click', agregarHijoSeleccion);
@@ -113,8 +125,7 @@ function iniciarMapaMental() {
     const li = nodo.closest('li'); if (!li) return;
     let ulH = li.querySelector(':scope>ul'); if (!ulH) { ulH = document.createElement('ul'); li.appendChild(ulH); }
     const nuevo = document.createElement('li'); nuevo.setAttribute('contenteditable', 'true'); nuevo.textContent = 'Nuevo nodo';
-    ulH.appendChild(nuevo); envolverTextos(); dibujarLineas();
-    focusOn(nuevo);
+    ulH.appendChild(nuevo); envolverTextos(); makeAllDraggable(); dibujarLineas(); focusOn(nuevo);
   }
 
   // Agregar hermano
@@ -123,17 +134,17 @@ function iniciarMapaMental() {
     let nodo = sel.anchorNode.nodeType === Node.TEXT_NODE ? sel.anchorNode.parentElement : sel.anchorNode;
     const li = nodo.closest('li'); if (!li || !li.parentNode) return;
     const herm = document.createElement('li'); herm.setAttribute('contenteditable', 'true'); herm.textContent = 'Nuevo nodo';
-    li.parentNode.insertBefore(herm, li.nextSibling); envolverTextos(); dibujarLineas();
-    focusOn(herm);
+    li.parentNode.insertBefore(herm, li.nextSibling); envolverTextos(); makeAllDraggable(); dibujarLineas(); focusOn(herm);
   });
 
-  // Color, guardar, cargar (igual que antes)
+  // Color, guardar y cargar Markdown (igual que antes)
   document.getElementById('btnColor').addEventListener('click', () => document.getElementById('selectorColor').click());
   document.getElementById('selectorColor').addEventListener('input', () => {
     const sel = window.getSelection(); if (!sel.anchorNode) return;
     let sp = sel.anchorNode.nodeType === Node.TEXT_NODE ? sel.anchorNode.parentElement : sel.anchorNode;
     sp = sp.closest('span.node-text'); if (sp) sp.style.color = document.getElementById('selectorColor').value;
   });
+
   document.getElementById('btnGuardar').addEventListener('click', () => {
     function md(ul, depth = 0) {
       let s = '';
@@ -141,16 +152,20 @@ function iniciarMapaMental() {
         const t = (li.querySelector(':scope>span.node-text')?.textContent || '').trim();
         s += '  '.repeat(depth) + '- ' + t + '\n';
         const ch = li.querySelector(':scope>ul'); if (ch) s += md(ch, depth + 1);
-      }); return s;
+      });
+      return s;
     }
     const name = (mapa.querySelector('span.node-text')?.textContent.trim() || 'mapa') + '.md';
-    const blob = new Blob([md(mapa)], { type: 'text/markdown' }); const url = URL.createObjectURL(blob);
+    const blob = new Blob([md(mapa)], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a);
     a.click(); setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
   });
+
   document.getElementById('btnCargar').addEventListener('click', () => document.getElementById('inputArchivo').click());
   document.getElementById('inputArchivo').addEventListener('change', e => {
-    const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = ev => cargarMd(ev.target.result); r.readAsText(f);
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader(); r.onload = ev => cargarMd(ev.target.result); r.readAsText(f);
   });
   function cargarMd(text) {
     const lines = text.split('\n'); const ulR = document.createElement('ul'); const stack = [{ ul: ulR, ind: -1 }];
@@ -165,16 +180,54 @@ function iniciarMapaMental() {
       let chi = li.querySelector('ul'); if (!chi) { chi = document.createElement('ul'); li.appendChild(chi); }
       stack.push({ ul: chi, ind });
     }
-    mapa.innerHTML = ulR.innerHTML; envolverTextos(); dibujarLineas();
+    mapa.innerHTML = ulR.innerHTML; envolverTextos(); makeAllDraggable(); dibujarLineas();
   }
 
-  // Utilitario para focus
-  function focusOn(li) {
-    const sp = li.querySelector('span.node-text') || li;
-    sp.focus(); const range = document.createRange(); range.selectNodeContents(sp); range.collapse(true);
-    const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
+  // Mover arriba/abajo
+  document.getElementById('btnMoveUp').addEventListener('click', () => swapWithSibling(-1));
+  document.getElementById('btnMoveDown').addEventListener('click', () => swapWithSibling(+1));
+  function swapWithSibling(direction) {
+    const sel = window.getSelection(); if (!sel.anchorNode) return;
+    let nodo = sel.anchorNode.nodeType === Node.TEXT_NODE ? sel.anchorNode.parentElement : sel.anchorNode;
+    const li = nodo.closest('li'); if (!li || !li.parentNode) return;
+    const siblings = Array.from(li.parentNode.children);
+    const idx = siblings.indexOf(li);
+    const targetIdx = idx + direction;
+    if (targetIdx < 0 || targetIdx >= siblings.length) return;
+    const target = siblings[targetIdx];
+    if (direction < 0) li.parentNode.insertBefore(li, target);
+    else li.parentNode.insertBefore(target, li);
+    envolverTextos(); dibujarLineas(); focusOn(li);
   }
 
-  // render inicial
-  envolverTextos(); dibujarLineas();
+  // Drag & Drop handlers
+  function enableDragDrop(li) {
+    li.draggable = true;
+    li.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', '');
+      dragged = li;
+    });
+    li.addEventListener('dragover', e => {
+      e.preventDefault();
+      li.classList.add('drag-over');
+    });
+    li.addEventListener('dragleave', () => { li.classList.remove('drag-over'); });
+    li.addEventListener('drop', e => {
+      e.stopPropagation();
+      li.classList.remove('drag-over');
+      if (dragged && dragged !== li) {
+        li.parentNode.insertBefore(dragged, li.nextSibling);
+        envolverTextos(); dibujarLineas();
+      }
+    });
+  }
+  function makeAllDraggable() {
+    mapa.querySelectorAll('li').forEach(li => { if (!li.draggable) enableDragDrop(li); });
+  }
+
+  // Inicial
+  envolverTextos();
+  makeAllDraggable();
+  dibujarLineas();
 }
+
