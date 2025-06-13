@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jocarsa | mindmap</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="controles">
+  	<a href="https://jocarsa.com"><img src="https://static.jocarsa.com/logos/jocarsa%20%7C%20Indigo.svg"></a>
+    <button id="btnAgregarHijo" title="Agregar hijo">➕</button>
+    <button id="btnAgregarHermano" title="Agregar hermano">↔️</button>
+    <button id="btnColor" title="Color de texto">🎨</button>
+    <input type="color" id="selectorColor">
+    <button id="btnZoomIn" title="Zoom In">🔍</button>
+    <button id="btnZoomOut" title="Zoom Out">🔍</button>
+    <button id="btnPanUp" title="Pan Arriba">⬆️</button>
+    <button id="btnPanDown" title="Pan Abajo">⬇️</button>
+    <button id="btnPanLeft" title="Pan Izquierda">⬅️</button>
+    <button id="btnPanRight" title="Pan Derecha">➡️</button>
+    <button id="btnGuardar" title="Guardar como Markdown">💾</button>
+    <button id="btnCargar" title="Cargar Markdown">📂</button>
+    <input type="file" id="inputArchivo" accept=".md">
+    <button id="btnToggleVista" title="Vista sencilla">📃</button>
+  </div>
+
+  <ul contenteditable>
+    <li>Mapa</li>
+  </ul>
+
+  <script src="script.js"></script>
+  <script src="https://ghostwhite.jocarsa.com/analytics.js?user=mindmap.jocarsa.com"></script>
+</body>
+</html>

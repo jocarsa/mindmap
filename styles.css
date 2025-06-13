@@ -1,0 +1,42 @@
+<!-- styles.css -->
+/* Reset y base */
+*{margin:0;padding:0;outline:none !important;}
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: auto;    /* ← ensure scrollbars appear when content is bigger */
+}
+body{
+  display:flex;justify-content:center;align-items:center;
+  font-family:sans-serif;background:#fff;position:relative;
+}
+
+/* Panel de controles */
+#controles{
+  position:absolute;top:10px;left:10px;
+  display:flex;gap:8px;flex-wrap:wrap;
+  background:rgba(255,255,255,0.9);
+  padding:6px;border-radius:6px;
+  box-shadow:0 1px 4px rgba(0,0,0,0.2);
+  z-index:1000;
+}
+#controles button, #controles input[type="color"],#controles input[type="file"]{
+  cursor:pointer;border:none;background:none;
+  font-size:1.2rem;
+  padding:4px;
+}
+
+/* Editable List - Mapa mental */
+ul[contenteditable]{list-style:none;padding:10px;position:relative;outline:none;}
+li{display:flex;align-items:center;padding:10px 10px 10px 20px;}
+span.node-text{display:inline-block;white-space:pre;}
+
+/* Líneas del mapa */
+#mindmap-lines{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:-1;}
+
+/* Vista sencilla */
+body.plain-view ul[contenteditable]{list-style:disc outside;padding-left:40px!important;position:static!important;}
+body.plain-view li{display:list-item!important;margin:0.5em 0;padding:initial!important;padding-left:13px!important;}
+body.plain-view #mindmap-lines{display:none!important;}
+#inputArchivo,#selectorColor{display:none;}
+a img{width:30px;}
