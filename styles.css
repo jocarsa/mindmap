@@ -44,3 +44,71 @@ a img{width:30px;}
   font-size: 1.2rem;
   padding: 4px;
 }
+/* ===== Selection / highlight ===== */
+li.selected > span.node-text{
+  background: rgba(255, 215, 0, 0.25);
+  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.35) inset;
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+
+/* ===== Drag visual ===== */
+li.drag-over > span.node-text{
+  outline: 2px dashed rgba(0,0,0,0.35);
+  border-radius: 6px;
+}
+
+/* ===== Folding ===== */
+li.collapsed > ul{ display:none; }
+li > span.node-text::before{
+  content:"";
+  display:inline-block;
+  width:10px;
+}
+li.has-children > span.node-text::before{
+  content:"▾";
+  opacity:.6;
+  margin-right:6px;
+}
+li.has-children.collapsed > span.node-text::before{
+  content:"▸";
+}
+
+/* ===== Radial mode ===== */
+body.radial-view{
+  align-items:flex-start; /* map starts at top-left (pan/zoom moves it) */
+}
+body.radial-view ul[contenteditable]{
+  position:relative !important;
+  list-style:none !important;
+  padding:0 !important;
+  /* big workspace so you can pan around */
+  width:2400px;
+  height:2400px;
+}
+body.radial-view li{
+  position:absolute !important;
+  display:block !important;
+  padding:0 !important;
+  margin:0 !important;
+  align-items:initial !important;
+}
+body.radial-view li > span.node-text{
+  display:inline-block;
+  padding:8px 10px;
+  border:1px solid rgba(0,0,0,.12);
+  border-radius:10px;
+  background:#fff;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+
+/* In radial mode, nested ULs are kept for structure, but visually irrelevant */
+body.radial-view li > ul{
+  position:absolute;
+  left:0; top:0;
+  opacity:0;
+  pointer-events:none;
+  height:0; width:0;
+  overflow:hidden;
+}
+

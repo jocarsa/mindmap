@@ -1,30 +1,42 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>jocarsa | mindmap</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>jocarsa | mindmap</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div id="controles">
-  	<a href="https://jocarsa.com"><img src="https://static.jocarsa.com/logos/jocarsa%20%7C%20Indigo.svg"></a>
+    <a href="https://jocarsa.com">
+      <img src="https://static.jocarsa.com/logos/jocarsa%20%7C%20Indigo.svg" alt="jocarsa">
+    </a>
+
     <button id="btnAgregarHijo" title="Agregar hijo">➕</button>
     <button id="btnAgregarHermano" title="Agregar hermano">↔️</button>
+
+    <button id="btnFoldChildren" title="Plegar/desplegar hijos (nivel)">🗂️</button>
+    <button id="btnFoldAll" title="Plegar/desplegar todo (recursivo)">🗃️</button>
+
     <button id="btnColor" title="Color de texto">🎨</button>
     <input type="color" id="selectorColor">
+
     <button id="btnZoomIn" title="Zoom In">🔍</button>
     <button id="btnZoomOut" title="Zoom Out">🔍</button>
+
     <button id="btnPanUp" title="Pan Arriba">⬆️</button>
     <button id="btnPanDown" title="Pan Abajo">⬇️</button>
     <button id="btnPanLeft" title="Pan Izquierda">⬅️</button>
     <button id="btnPanRight" title="Pan Derecha">➡️</button>
-      <button id="btnMoveUp" title="Mover arriba">⬆️⬆️</button>
-  <button id="btnMoveDown" title="Mover abajo">⬇️⬇️</button>
+
+    <button id="btnMoveUp" title="Mover arriba">⬆️⬆️</button>
+    <button id="btnMoveDown" title="Mover abajo">⬇️⬇️</button>
+
     <button id="btnGuardar" title="Guardar como Markdown">💾</button>
-    <button id="btnCargar" title="Cargar Markdown">📂</button>
-    <input type="file" id="inputArchivo" accept=".md">
-    <button id="btnToggleVista" title="Vista sencilla">📃</button>
+    <button id="btnCargar" title="Cargar Markdown / JSON">📂</button>
+    <input type="file" id="inputArchivo" accept=".md,.json">
+
+    <button id="btnToggleVista" title="Cambiar vista (normal / sencilla / radial)">📃</button>
   </div>
 
   <ul contenteditable>
@@ -35,3 +47,4 @@
   <script src="https://ghostwhite.jocarsa.com/analytics.js?user=mindmap.jocarsa.com"></script>
 </body>
 </html>
+
